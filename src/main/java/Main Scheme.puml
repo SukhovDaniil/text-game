@@ -1,0 +1,42 @@
+@startuml
+
+interface Game
+
+class GameState {
+    private Word word
+    private Person person
+    private List<Npc> npcs
+
+    public WordState getWordState()
+    public Position getPersonPosition(Person person)
+}
+
+class Person {
+
+    public PersonState getState()
+}
+
+interface MessageDelivery {
+    sendMessage(String message, to, from)
+}
+
+
+
+
+
+
+interface Npc {
+    speak()
+}
+
+abstract class Warrior {
+
+}
+
+Npc <|-- Warrior
+
+
+
+
+
+@enduml
