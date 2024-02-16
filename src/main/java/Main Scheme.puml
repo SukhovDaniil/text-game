@@ -1,55 +1,122 @@
 @startuml
 
-interface Game
+package integration {
 
-class GameState {
-    private Word word
-    private Person person
-    private List<Npc> npcs
+    enum Messagers {
+        GAME_CONTROLLER
+        USER
+        PERSON
+    }
 
-    public WordState getWordState()
-    public Position getPersonPosition(Person person)
+    interface MessageDelivery {
+        + sendMessage(Message message)
+        + addListener(Listener<Message> listener)
+    }
+
+    interface Listener<I> {
+        public onMessage(I message)
+    }
+
+    abstract class AbstractMessageDelivery {
+        - List<MessageListener> listeners
+    }
+    MessageDelivery <|-- AbstractMessageDelivery
+    AbstractMessageDelivery o-- Listener
+
+    class Message {
+        - Messagers from
+        - Messagers to
+        - String message
+
+        + boolean to(Messagers messager)
+        + boolean from(Messagers messager)
+        + String getMessage()
+    }
 }
 
-class Person {
+package game {
+    class GameController {
+        - MessageDelivery messageDelivery
 
-    public PersonState getState()
+        - newGame()
+        - stopGame()
+    }
+    GameController o-- MessageDelivery
+
+    package word{
+
+        interface Person {
+
+        }
+
+        interface Position {
+
+        }
+
+        interface Word {
+            + Position getPosition(Person person)
+            + Word getState()
+        }
+
+        package impl {
+
+            class PersonImpl {
+
+            }
+            Person <|-- PersonImpl
+
+            class PositionImpl {
+
+            }
+            Position <|-- PositionImpl
+
+            class WordImpl {
+
+            }
+            Word <|-- WordImpl
+
+            class WordStateImpl {
+
+            }
+            Word <|-- WordStateImpl
+        }
+    }
+
+    package npc {
+
+        interface Npc {
+            + speak()
+        }
+
+        abstract class AbstractSeller {
+
+        }
+        Npc <|-- AbstractSeller
+
+        class Seller {
+
+        }
+        AbstractSeller <|-- Seller
+
+        abstract class AbstractWarrior {
+
+        }
+        Npc <|-- AbstractWarrior
+
+        class Warrior {
+
+        }
+        AbstractWarrior <|-- Warrior
+
+    }
+
 }
 
-interface MessageDelivery {
-    sendMessage(String message, to, from)
-
-    toUser(String message)
-    toPerson(String message)
+package telegram {
+    class TelegramMessageDelivery {
+        - TelegramBot telegramBor
+    }
+    MessageDelivery <|-- TelegramMessageDelivery
 }
-
-
-
-
-
-
-interface Npc {
-    speak()
-}
-
-abstract class Warrior {
-
-}
-Npc <|-- Warrior
-class WarriorImpl {
-
-}
-Warrior <|-- WarriorImpl
-
-abstract class Seller{
-
-
-}
-Npc <|-- Seller
-class SellerImpl {
-
-}
-Seller <|-- SellerImpl
-
 
 @enduml

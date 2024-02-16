@@ -12,7 +12,7 @@ public class WordImpl implements Word {
     }
 
     @Override
-    public WordStateImpl getState() {
+    public Word getState() {
         return null;
     }
 }
