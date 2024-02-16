@@ -18,6 +18,9 @@ class Person {
 
 interface MessageDelivery {
     sendMessage(String message, to, from)
+
+    toUser(String message)
+    toPerson(String message)
 }
 
 
@@ -32,11 +35,21 @@ interface Npc {
 abstract class Warrior {
 
 }
-
 Npc <|-- Warrior
+class WarriorImpl {
+
+}
+Warrior <|-- WarriorImpl
+
+abstract class Seller{
 
 
+}
+Npc <|-- Seller
+class SellerImpl {
 
+}
+Seller <|-- SellerImpl
 
 
 @enduml
