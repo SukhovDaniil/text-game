@@ -1,0 +1,13 @@
+@startuml
+!include game/npc/npc.puml
+!include game/word/word.puml
+!include integration/integration.puml
+
+package telegram {
+    class TelegramMessageDelivery {
+        - TelegramBot telegramBor
+    }
+    MessageDelivery <|-- TelegramMessageDelivery
+}
+
+@enduml

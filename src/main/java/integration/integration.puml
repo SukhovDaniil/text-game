@@ -1,0 +1,35 @@
+@startuml
+package integration {
+
+    enum Messagers {
+        GAME_CONTROLLER
+        USER
+        PERSON
+    }
+
+    interface MessageDelivery {
+        + sendMessage(Message message)
+        + addListener(Listener<Message> listener)
+    }
+
+    interface Listener<I> {
+        public onMessage(I message)
+    }
+
+    abstract class AbstractMessageDelivery {
+        - List<Listener<Message>> listeners
+    }
+    MessageDelivery <|-- AbstractMessageDelivery
+    AbstractMessageDelivery o-- Listener
+
+    class Message {
+        - Messagers from
+        - Messagers to
+        - String message
+
+        + boolean to(Messagers messager)
+        + boolean from(Messagers messager)
+        + String getMessage()
+    }
+}
+@enduml
