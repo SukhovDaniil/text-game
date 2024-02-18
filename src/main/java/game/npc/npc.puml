@@ -1,0 +1,35 @@
+@startuml
+    package game.npc {
+
+        interface Npc {
+            + speakWith(Person person)
+        }
+
+        abstract class AbstractSeller {
+            + sell(Person to, Item item)
+            + Optional<int> buy(Person from, Item item)
+        }
+        note right of AbstractSeller::"buy(Person from, Item item)"
+            Optional isEmpty - у продавца не хватило денег
+            Optional isPresent - успех
+        end note
+        Npc <|-- AbstractSeller
+
+        class Seller {
+
+        }
+        AbstractSeller <|-- Seller
+
+        abstract class AbstractWarrior {
+
+        }
+        Npc <|-- AbstractWarrior
+
+        class Warrior {
+
+        }
+        AbstractWarrior <|-- Warrior
+
+    }
+
+@enduml

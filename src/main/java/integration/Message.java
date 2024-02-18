@@ -1,9 +1,11 @@
 package integration;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Builder
 public class Message {
 
     private final Messagers from;

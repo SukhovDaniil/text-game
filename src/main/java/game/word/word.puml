@@ -1,0 +1,33 @@
+@startuml
+package game.word {
+
+    enum CellType {
+        ROCK
+        FLOOR
+    }
+
+    class Cell {
+        - CellType type
+        - Cell up
+        - Cell down
+        - Cell left
+        - Cell right
+
+        + Cell getUp()
+        + Cell getDown()
+        + Cell getLeft()
+        + Cell getRight()
+        + CellType getType()
+        + Set<Cell> getSurroundings(int radius)
+    }
+
+    interface Person {
+        + Cell getPosition()
+        + goUp()
+        + goDown()
+        + goLeft()
+        + goRight()
+    }
+}
+
+@enduml
