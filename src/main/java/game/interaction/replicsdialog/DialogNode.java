@@ -4,16 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 
-public class DialogNode {
+public abstract class DialogNode {
 
-    private final Object interviewer;
-    @Getter
-    private final Replica replica;
     @Getter
     private Set<DialogNode> children = new HashSet<>();
 
-    public DialogNode(Replica replica, Object interviewer) {
-        this.replica = replica;
+    private final Object interviewer;
+
+    public DialogNode(Object interviewer) {
         this.interviewer = interviewer;
     }
 
@@ -23,7 +21,7 @@ public class DialogNode {
     }
 
     //по сути - вставка поддерева
-    DialogNode pasteChildren(Set<DialogNode> pastedChildren) {
+    public DialogNode pasteChildren(Set<DialogNode> pastedChildren) {
         if (this.children.isEmpty()) {
             this.children = pastedChildren;
         } else {
@@ -34,9 +32,10 @@ public class DialogNode {
     }
 
     public String say() {
-        this.replica.sayAs(this);
-        return this.replica.getDescription();
+        return getDescription();
     }
+
+    public abstract String getDescription();
 
     public boolean isTo(Object to) {
         return this.interviewer == to;

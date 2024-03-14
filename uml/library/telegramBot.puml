@@ -1,0 +1,36 @@
+@startuml
+
+package com.pengrad.telegrambot.model.request {
+
+    abstract class Keyboard {
+
+    }
+
+    class InlineKeyboardMarkup {
+
+    }
+    Keyboard <|-- InlineKeyboardMarkup
+}
+
+package com.pengrad.telegrambot.request {
+
+    abstract class BaseRequest<T extend BaseRequest<T, R>, R extend BaseRequest> {
+
+    }
+
+    abstract class AbstractSendRequest<T extends AbstractSendRequest<T>> {
+
+    }
+    BaseRequest <|-- AbstractSendRequest
+}
+
+package com.pengrad.telegrambot {
+
+    class TelegramBot {
+
+        + R execute(BaseRequest<T, R> request()
+    }
+    BaseRequest <-- TelegramBot
+}
+
+@enduml

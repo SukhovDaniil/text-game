@@ -11,11 +11,9 @@ import java.util.Set;
 public class DialogController implements ActionController {
 
     private final Human interviewer;
-    //private final Person from;
     private Map<String, DialogNode> availableChoices;
 
     public DialogController(Human interviewer, Set<DialogNode> dialogs) {
-        //this.from = from;
         this.interviewer = interviewer;
         updateChoices(dialogs);
     }
@@ -28,7 +26,11 @@ public class DialogController implements ActionController {
         DialogNode choice = availableChoices.get(action);
         List<String> result = new ArrayList<>();
         result.add(
-            (choice.isTo(interviewer) ? "[%s] << %s" : "[%s] >> %s").formatted(interviewer.name(), choice.say()));
+            (choice.isTo(interviewer)
+                ? "[%s] << %s"
+                : "[%s] >> %s")
+                .formatted(interviewer.name(), choice.say())
+        );
         updateChoices(choice.getChildren());
 
         if (this.availableChoices.isEmpty()) {
@@ -39,7 +41,7 @@ public class DialogController implements ActionController {
             result.addAll(
                 act(
                     this.availableChoices.entrySet().stream()
-                        .findFirst().orElseThrow().getValue().getReplica().getDescription()
+                        .findFirst().orElseThrow().getValue().getDescription()
                 )
             );
         }
@@ -57,7 +59,7 @@ public class DialogController implements ActionController {
     }
 
     private void updateChoices(Set<DialogNode> newChoices) {
-        this.availableChoices = newChoices.stream().collect(toMap(d -> d.getReplica().getDescription(), d -> d));
+        this.availableChoices = newChoices.stream().collect(toMap(DialogNode::getDescription, d -> d));
     }
 
     private boolean hasAutoActableChoices() {

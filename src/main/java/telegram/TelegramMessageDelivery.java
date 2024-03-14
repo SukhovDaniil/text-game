@@ -10,16 +10,17 @@ import com.google.inject.name.Named;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.SendMessage;
 import integration.AbstractMessageDelivery;
 import integration.Message;
+import integration.Replica;
 import java.util.Arrays;
 
 @Singleton
 public class TelegramMessageDelivery extends AbstractMessageDelivery {
 
     private final TelegramBot telegramBot;
-    private long chatId;
+    private Long chatId;
+    private TelegramMessageFactory messageFactory;
 
     @Inject
     public TelegramMessageDelivery(@Named("telegram.token") String token) {
@@ -32,17 +33,19 @@ public class TelegramMessageDelivery extends AbstractMessageDelivery {
     private void setMessageFormUserListener() {
         this.telegramBot.setUpdatesListener(updates -> {
             updates.forEach(update -> {
-                if (updates.get(0).message() == null) {
-                    this.chatId = updates.get(0).myChatMember().chat().id();
+                if (update.message() != null) {
+                    initChat(updates.get(0).message().from().id());
+                } else if (update.myChatMember() != null) {
+                    initChat(updates.get(0).myChatMember().chat().id());
                 } else {
-                    this.chatId = updates.get(0).message().from().id();
+                    initChat(update.callbackQuery().from().id());
                 }
 
                 this.sendMessage(
                     Message.builder()
                         .from(USER)
                         .to(isBotCommand(update) ? GAME_CONTROLLER : PERSON)
-                        .message(update.message().text())
+                        .message(new Replica(getMessageString(update)))
                         .build()
                 );
             });
@@ -50,15 +53,31 @@ public class TelegramMessageDelivery extends AbstractMessageDelivery {
         });
     }
 
+    private void initChat(long chatId) {
+        if (this.chatId == null) {
+            this.chatId = chatId;
+            this.messageFactory = new TelegramMessageFactory(this.chatId);
+        }
+    }
+
+    private String getMessageString(Update update) {
+        if (update.message() != null) {
+            return update.message().text();
+        }
+        return update.callbackQuery().data();
+    }
+
     private boolean isBotCommand(Update update) {
-        return Arrays.stream(update.message().entities())
+        return update.message() != null
+            && update.message().entities() != null
+            && Arrays.stream(update.message().entities())
             .anyMatch(entity -> entity.type().equals(bot_command));
     }
 
     private void setMessageToUserListener() {
         this.addListener(message -> {
             if (message.to(USER)) {
-                telegramBot.execute(new SendMessage(chatId, message.getMessage()));
+                messageFactory.getMessageFrom(message.getMessages()).forEach(telegramBot::execute);
             }
         });
     }
