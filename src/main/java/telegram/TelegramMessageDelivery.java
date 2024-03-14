@@ -12,7 +12,7 @@ import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
 import integration.AbstractMessageDelivery;
 import integration.Message;
-import integration.Replica;
+import integration.printable.Replica;
 import java.util.Arrays;
 
 @Singleton

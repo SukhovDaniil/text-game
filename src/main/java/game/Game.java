@@ -6,11 +6,11 @@ import game.word.Person;
 import game.word.Word;
 import game.word.impl.PersonImpl;
 import game.word.impl.WordImpl;
-import integration.Choice;
 import integration.Message;
 import integration.MessageDelivery;
 import integration.Messagers;
-import integration.Replica;
+import integration.printable.Choice;
+import integration.printable.Replica;
 
 @Singleton
 public class Game {

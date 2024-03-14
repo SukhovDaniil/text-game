@@ -19,6 +19,7 @@ public class Actor implements ActionController {
 
     private final Person person;
     private final Word word;
+
     private AbstractSeller seller = new Seller()
         .addItem(new Sword(10, "меч-леденец", 1))
         .addItem(new HealthPotion("вода жизни", 1000))

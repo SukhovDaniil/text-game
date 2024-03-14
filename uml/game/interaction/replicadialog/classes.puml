@@ -4,14 +4,9 @@
 
 package game.interaction.replicadialog {
 
-    interface Replica {
-        + void sayAs(DialogNode)
-        + String getDescription
-    }
-
-    class DialogNode {
+    abstract class DialogNode {
         - Object interviewer
-        - Replica replica
+
         - Set<DialogNode> children
 
         + DialogNode addChild(DialogNode child)
@@ -20,13 +15,11 @@ package game.interaction.replicadialog {
         + boolean isTo(Object interviewer)
     }
     DialogNode "1" o--> "*" DialogNode
-    DialogNode "1" o--> "1" Replica
 
     note  as C1
         Избавится от интерфейса реплики, и вынести логику в DialogNode.
         Логику узла дерева вынести в абстрактный класс/интерфейс, а в реализации DialogNode реализовать логику диалога.
     end note
-    Replica .. C1
     DialogNode .. C1
 
     class DialogController {

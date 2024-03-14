@@ -1,4 +1,4 @@
-package integration;
+package integration.printable;
 
 public abstract class Printable {
 

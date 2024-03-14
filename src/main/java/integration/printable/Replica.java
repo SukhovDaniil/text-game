@@ -1,4 +1,4 @@
-package integration;
+package integration.printable;
 
 import java.util.List;
 
