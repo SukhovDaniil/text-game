@@ -1,0 +1,48 @@
+@startuml
+
+!include ../classes.puml
+
+package game.interaction.replicadialog {
+
+    abstract class DialogNode {
+        - Object interviewer
+
+        - Set<DialogNode> children
+
+        + DialogNode addChild(DialogNode child)
+        + DialogNode pasteChildren(Set<DialogNode> pastedChildren)
+        + String say()
+        + boolean isTo(Object interviewer)
+    }
+    DialogNode "1" o--> "*" DialogNode
+
+    note  as C1
+        Избавится от интерфейса реплики, и вынести логику в DialogNode.
+        Логику узла дерева вынести в абстрактный класс/интерфейс, а в реализации DialogNode реализовать логику диалога.
+    end note
+    DialogNode .. C1
+
+    class DialogController {
+        - Human interviewer
+        - Map<String, DialogNode> availableChoices
+
+        + List<String> act(String action)
+        + Set<String> getChoices()
+        + String getDescription()
+    }
+    ActionController <|-- DialogController
+    DialogController "1" o--> "*" DialogNode
+
+    note as C2
+        Вынести общую логику в отдельный интерфейс, чтобы с ActionController можно было работать как с DialogNode.
+        Чтобы можно было создать контроллер контроллеров.
+        например в какой-то момент у нас есть возможности:
+            - поговорить с персонажем - объект класса DialogController
+            - атаковать персонажа - объект класса AttackController
+        А за выбор конкретного контроллера отвечает объект класса ActionControllerController (временное название, не бейте)
+    end note
+    ActionController .. C2
+    DialogNode .. C2
+}
+
+@enduml

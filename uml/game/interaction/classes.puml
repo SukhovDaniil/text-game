@@ -1,0 +1,18 @@
+@startuml
+
+package game.interaction {
+    interface ActionController {
+        + List<String> act(String action)
+        + Set<String> getChoices()
+        + String getDescription()
+    }
+}
+
+note left of game.interaction
+    API игровых действий:
+        - диалоги
+        - атаки
+        - движение
+        - и т.п.
+end note
+@enduml
