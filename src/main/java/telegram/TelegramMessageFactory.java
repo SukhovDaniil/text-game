@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
@@ -22,14 +22,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TelegramMessageFactory {
 
-    private final long chatId;
-    private final Map<Class<? extends Printable>, Function<Collection<Printable>, Set<SendMessage>>> messagesSuppliers =
+    private final Map<Class<? extends Printable>, BiFunction<Collection<Printable>, Long, Set<SendMessage>>> messagesSuppliers =
         new HashMap<>() {{
-            put(Replica.class, printables -> generateTextMessage(printables));
-            put(Choice.class, printables -> generateKeyboardMessage(printables));
+            put(Replica.class, (printables, id) -> generateTextMessage(printables, id));
+            put(Choice.class, (printables, id) -> generateKeyboardMessage(printables, id));
         }};
 
-    public HashSet<SendMessage> getMessageFrom(Collection<? extends Printable> printables) {
+    public HashSet<SendMessage> getMessageFrom(Collection<? extends Printable> printables, long id) {
         Map<Class<? extends Printable>, List<Printable>> printablesByType = printables.stream()
             .collect(Collectors.toMap(
                 Printable::getClass,
@@ -40,11 +39,11 @@ public class TelegramMessageFactory {
                 }));
 
         return printablesByType.entrySet().stream()
-            .flatMap(e -> messagesSuppliers.get(e.getKey()).apply(e.getValue()).stream())
+            .flatMap(e -> messagesSuppliers.get(e.getKey()).apply(e.getValue(), id).stream())
             .collect(Collectors.toCollection(HashSet::new));
     }
 
-    private Set<SendMessage> generateKeyboardMessage(Collection<Printable> printables) {
+    private Set<SendMessage> generateKeyboardMessage(Collection<Printable> printables, long id) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         printables.forEach(printable -> {
             InlineKeyboardButton[] buttonRaw = new InlineKeyboardButton[1];
@@ -52,13 +51,13 @@ public class TelegramMessageFactory {
             keyboardMarkup.addRow(buttonRaw);
         });
 
-        return Set.of(new SendMessage(this.chatId, "Доступен выбор")
+        return Set.of(new SendMessage(id, "Доступен выбор")
             .replyMarkup(keyboardMarkup));
     }
 
-    private Set<SendMessage> generateTextMessage(Collection<Printable> printables) {
+    private Set<SendMessage> generateTextMessage(Collection<Printable> printables, long id) {
         return printables.stream()
-            .map(printable -> new SendMessage(this.chatId, printable.get()))
+            .map(printable -> new SendMessage(id, printable.get()))
             .collect(Collectors.toSet());
     }
 }

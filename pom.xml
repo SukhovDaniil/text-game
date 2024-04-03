@@ -34,6 +34,16 @@
             <version>RELEASE</version>
         </dependency>
         <dependency>
+            <artifactId>logback-classic</artifactId>
+            <groupId>ch.qos.logback</groupId>
+            <version>1.4.8</version>
+        </dependency>
+        <dependency>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <groupId>org.slf4j</groupId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
             <version>5.1.0</version>
@@ -44,6 +54,17 @@
             <version>5.10.2</version>
             <type>pom</type>
             <scope>test</scope>
+        </dependency>
+        <!--    DataBase    -->
+        <dependency>
+            <artifactId>spring-jdbc</artifactId>
+            <groupId>org.springframework</groupId>
+            <version>5.2.25.RELEASE</version>
+        </dependency>
+        <dependency>
+            <artifactId>sqlite-jdbc</artifactId>
+            <groupId>org.xerial</groupId>
+            <version>3.45.2.0</version>
         </dependency>
     </dependencies>
 

@@ -6,19 +6,21 @@ import game.items.weapon.Sword;
 import game.npc.humans.Seller;
 import game.npc.humans.abstractions.AbstractSeller;
 import game.word.Person;
-import game.word.Word;
+import game.word.World;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Getter
 public class Actor implements ActionController {
 
     private final Person person;
-    private final Word word;
+    private final World world;
 
     private AbstractSeller seller = new Seller()
         .addItem(new Sword(10, "меч-леденец", 1))

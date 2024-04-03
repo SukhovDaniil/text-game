@@ -2,24 +2,23 @@ package game;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import game.word.Person;
-import game.word.Word;
-import game.word.impl.PersonImpl;
-import game.word.impl.WordImpl;
+import data.GameController;
 import integration.Message;
 import integration.MessageDelivery;
 import integration.Messagers;
 import integration.printable.Choice;
 import integration.printable.Replica;
+import java.util.HashMap;
+import java.util.Map;
 
 @Singleton
 public class Game {
 
     private final MessageDelivery messageDelivery;
 
-    private Actor actor;
-    private Person person;
-    private Word word;
+    private final Map<Long, Actor> actors = new HashMap<>();
+    @Inject
+    GameController gameController;
 
     @Inject
     public Game(MessageDelivery messageDelivery) {
@@ -32,45 +31,53 @@ public class Game {
             String executionString = message.getMessages().get(0).get();
             if (message.to(Messagers.GAME_CONTROLLER)) {
                 switch (executionString) {
-                    case "/start" -> newGame();
-                    case "/exit" -> stopGame();
+                    case "/create" -> gameController.initUser(message.getChatId());
+                    case "/delete" -> gameController.deleteUser(message.getChatId());
+                    case "/start" -> newGame(message.getChatId());
+                    case "/exit" -> stopGame(message.getChatId());
                     default -> messageDelivery.sendMessage(
-                        new Message(Messagers.GAME_CONTROLLER, Messagers.USER,
+                        new Message(message.getChatId(), Messagers.GAME_CONTROLLER, Messagers.USER,
                             new Replica("Неизвестная операция: %s".formatted(executionString))));
                 }
                 return;
             }
             if (message.to(Messagers.PERSON)) {
-                if (actor == null) {
+                if (!actors.containsKey(message.getChatId())) {
                     messageDelivery.sendMessage(
-                        new Message(Messagers.PERSON, Messagers.USER, new Replica("Сначала надо начать игру")));
+                        new Message(message.getChatId(), Messagers.PERSON, Messagers.USER,
+                            new Replica("Сначала надо начать игру")));
                 } else {
+                    Actor actor = actors.get(message.getChatId());
                     messageDelivery.sendMessage(
-                        new Message(Messagers.PERSON, Messagers.USER, Replica.of(actor.act(executionString))));
+                        new Message(message.getChatId(), Messagers.PERSON, Messagers.USER,
+                            Replica.of(actor.act(executionString))));
                     messageDelivery.sendMessage(
-                        new Message(Messagers.PERSON, Messagers.USER, Choice.of(actor.getChoices())));
+                        new Message(message.getChatId(), Messagers.PERSON, Messagers.USER,
+                            Choice.of(actor.getChoices())));
                 }
             }
         });
 
     }
 
-    private void newGame() {
-        initGame();
+    private void newGame(long chatId) {
+        Actor actor = initGame(chatId);
         messageDelivery.sendMessage(
-            new Message(Messagers.GAME_CONTROLLER, Messagers.USER, new Replica("Начинается новая игра...")));
-        messageDelivery.sendMessage(new Message(Messagers.PERSON, Messagers.USER, Choice.of(actor.getChoices())));
+            new Message(chatId, Messagers.GAME_CONTROLLER, Messagers.USER, new Replica("Начинается новая игра...")));
+        messageDelivery.sendMessage(
+            new Message(chatId, Messagers.PERSON, Messagers.USER, Choice.of(actor.getChoices())));
     }
 
-    private void stopGame() {
+    private void stopGame(long chatId) {
         messageDelivery.sendMessage(
-            new Message(Messagers.GAME_CONTROLLER, Messagers.USER, new Replica("Ну и не надо, ну и пожалуйста!")));
+            new Message(chatId, Messagers.GAME_CONTROLLER, Messagers.USER,
+                new Replica("Ну и не надо, ну и пожалуйста!")));
     }
 
-    private void initGame() {
-        this.person = new PersonImpl();
-        this.word = new WordImpl();
-        this.actor = new Actor(this.person, this.word);
+    private Actor initGame(long chatId) {
+        Actor actor = gameController.getActorForUser(chatId);
+        this.actors.put(chatId, actor);
+        return actor;
     }
 
 

@@ -6,18 +6,12 @@ import lombok.Getter;
 
 public abstract class DialogNode {
 
+    private final Object interviewer;
     @Getter
     private Set<DialogNode> children = new HashSet<>();
 
-    private final Object interviewer;
-
     public DialogNode(Object interviewer) {
         this.interviewer = interviewer;
-    }
-
-    public DialogNode addChild(DialogNode child) {
-        this.children.add(child); //todo null-check?
-        return this;
     }
 
     //по сути - вставка поддерева

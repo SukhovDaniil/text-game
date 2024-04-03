@@ -8,5 +8,6 @@ public class Configuration extends AbstractModule {
     protected void configure() {
         install(new PropertiesModule());
         install(new MessageDeliveryModule());
+        install(new DataBaseModule());
     }
 }
