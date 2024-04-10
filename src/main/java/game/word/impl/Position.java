@@ -1,5 +1,6 @@
 package game.word.impl;
 
+import game.interaction.move.Move;
 import lombok.Getter;
 
 @Getter
@@ -13,8 +14,15 @@ public class Position {
         this.y = y;
     }
 
-    public Position shift(int xShift, int yShift) {
+    public Position shift(Move move) {
+        int xShift = move.getDirection().getXShift() * move.getShift();
+        int yShift = move.getDirection().getYShift() * move.getShift();
         return new Position(this.x + xShift, this.y + yShift);
+    }
+
+    @Override
+    public String toString() {
+        return "(%s, %s)".formatted(this.x, this.y);
     }
 
     @Override

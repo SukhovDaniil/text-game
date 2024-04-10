@@ -3,7 +3,10 @@ package data.dao.world;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import data.entity.WorldEntity;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 @Singleton
 public class WorldDao {
@@ -11,8 +14,14 @@ public class WorldDao {
     @Inject
     JdbcTemplate jdbcTemplate;
 
-    public WorldEntity get(long id) {
-        return jdbcTemplate.queryForObject("SELECT * FROM worlds WHERE id = ?", new WorldRowMapper(), id);
+    private final RowMapper<WorldEntity> rowMapper = new WorldRowMapper();
+
+    public Optional<WorldEntity> get(long id) {
+        List<WorldEntity> worlds = jdbcTemplate.query("SELECT * FROM worlds WHERE id = ?", rowMapper, id);
+        if (worlds.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(worlds.get(0));
     }
 
     public long create(WorldEntity entity) {

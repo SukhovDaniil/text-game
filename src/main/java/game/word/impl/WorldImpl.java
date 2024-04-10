@@ -1,7 +1,10 @@
 package game.word.impl;
 
+import game.interaction.move.Direction;
+import game.interaction.move.Move;
 import game.word.Positionable;
 import game.word.World;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
@@ -19,13 +22,14 @@ public class WorldImpl implements World {
     private final Set<Positionable> objects = new HashSet<>();
 
     @Override
-    public boolean possibleToMove(Position position) {
+    public boolean possibleSetTo(Position position) {
         return position.getX() >= 0 && position.getX() < xSize
             && position.getY() >= 0 && position.getY() < ySize
             && objects.stream().noneMatch(o -> o.getPosition().equals(position));
     }
 
-    public void addPositionable(@NotNull Positionable positionable) {
+    public void setOnPosition(@NotNull Positionable positionable, Position position) {
+        positionable.setPosition(position);
         this.objects.add(positionable);
     }
 
@@ -35,5 +39,30 @@ public class WorldImpl implements World {
 
     public Set<Positionable> getPositionable() {
         return new HashSet<>(this.objects);
+    }
+
+    @Override
+    public Set<Move> getPossibleMove(Positionable positionable) {
+        if (!this.getPositionable().contains(positionable)) {
+            return Collections.emptySet();
+        }
+
+        Set<Move> possibleMoves = new HashSet<>();
+        Position currentPosition = positionable.getPosition();
+        for (Direction direction : Direction.values()) {
+            Move move = new Move(direction, 1);
+            Position newPosition = currentPosition.shift(move);
+            if (possibleSetTo(newPosition)) {
+                possibleMoves.add(move);
+            }
+        }
+
+        return possibleMoves;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + String.join("; ", this.objects.stream().map(p -> "%s: %s".formatted(p, p.getPosition())).toList())
+            + "]";
     }
 }

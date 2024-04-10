@@ -1,11 +1,6 @@
 CREATE TABLE IF NOT EXISTS users(
-    id INTEGER PRIMARY KEY
-);
-
-CREATE TABLE IF NOT EXISTS users_worlds (
-    user_id INTEGER NOT NULL,
-    world_id INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id),
+    id INTEGER PRIMARY KEY,
+    world_id INTEGER,
     FOREIGN KEY (world_id) REFERENCES worlds(id)
 );
 

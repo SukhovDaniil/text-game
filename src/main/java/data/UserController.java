@@ -1,15 +1,16 @@
 package data;
 
+import data.entity.UserEntity;
 import java.util.Optional;
 
 public interface UserController {
 
-    void initIfNotExist(long userId);
+    UserEntity getOrCreate(long userId);
 
-    void deleteIfExist(long userId);
+    void delete(long userId);
 
-    Optional<Long> getUserWorldId(long userId);
+    Optional<UserEntity> get(long userId);
 
-    void setUserWorldId(long userId, long worldId);
+    void update(UserEntity user);
 
 }

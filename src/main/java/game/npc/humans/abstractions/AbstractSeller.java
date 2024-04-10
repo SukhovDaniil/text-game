@@ -8,6 +8,8 @@ import game.interaction.replicsdialog.DialogNode;
 import game.items.Item;
 import game.npc.Human;
 import game.word.Person;
+import game.word.Positionable;
+import game.word.impl.Position;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +18,16 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.Getter;
 
-public abstract class AbstractSeller implements Human, Actionable {
+public abstract class AbstractSeller implements Human, Actionable, Positionable {
+
+    @Getter
+    private Position position;
+
+    @Override
+    public Position setPosition(Position position) {
+        this.position = position;
+        return this.position;
+    }
 
     @Override
     public Set<ActionController> getActions(Object to) {

@@ -6,6 +6,7 @@ import data.WorldController;
 import data.dao.world.WorldDao;
 import data.entity.WorldEntity;
 import game.word.World;
+import game.word.impl.WorldImpl;
 
 @Singleton
 public class WorldControllerImpl implements WorldController {
@@ -25,7 +26,8 @@ public class WorldControllerImpl implements WorldController {
 
     @Override
     public World get(long id) {
-        return worldDao.get(id).toWord();
+        WorldEntity entity = worldDao.get(id).get();
+        return new WorldImpl(entity.getXSize(), entity.getYSize());
     }
 
     @Override

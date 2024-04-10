@@ -20,4 +20,8 @@ public class Seller extends AbstractSeller {
         return "Торговец";
     }
 
+    @Override
+    public String toString() {
+        return name();
+    }
 }
