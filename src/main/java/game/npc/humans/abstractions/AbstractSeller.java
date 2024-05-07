@@ -23,6 +23,8 @@ public abstract class AbstractSeller implements Human, Actionable, Positionable 
     @Getter
     private Position position;
 
+    private boolean isBusy;
+
     @Override
     public Position setPosition(Position position) {
         this.position = position;
@@ -109,5 +111,20 @@ public abstract class AbstractSeller implements Human, Actionable, Positionable 
         };
 
         return new DialogController(this, Set.of(showMeItems));
+    }
+
+    @Override
+    public boolean isBusy() {
+        return this.isBusy;
+    }
+
+    @Override
+    public void occupy() {
+        this.isBusy = true;
+    }
+
+    @Override
+    public void toFree() {
+        this.isBusy = false;
     }
 }

@@ -67,7 +67,8 @@ public class Game {
 
     private void initGame(long chatId) {
         if (!actors.containsKey(chatId)) {
-            actors.put(chatId, gameController.getActorForUser(chatId));
+            actors.put(chatId,
+                gameController.getActorForUser(chatId).messageDelivery(messageDelivery).autogame(chatId));
             messageDelivery.sendMessage(
                 new Message(chatId, Messagers.GAME_CONTROLLER, Messagers.USER,
                     new Replica("Начинается новая игра...")));

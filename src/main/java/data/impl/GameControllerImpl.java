@@ -6,8 +6,14 @@ import data.UserController;
 import data.WorldController;
 import data.entity.UserEntity;
 import game.Actor;
+import game.items.potion.HealthPotion;
+import game.items.weapon.Sword;
+import game.npc.humans.Seller;
+import game.word.Person;
+import game.word.Positionable;
 import game.word.World;
 import game.word.impl.PersonImpl;
+import game.word.impl.Position;
 import game.word.impl.WorldImpl;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -46,8 +52,14 @@ public class GameControllerImpl implements GameController {
             user.worldId(worldId);
             userController.update(user);
         }
+        world.setOnPosition(new Seller()
+            .addItem(new Sword(10, "меч-леденец", 1))
+            .addItem(new HealthPotion("вода жизни", 1000))
+            .addItem(new Sword(66, "меч", 69)), new Position(12, 78));
 
-        return new Actor(new PersonImpl(), world);
+        Person person = new PersonImpl();
+        world.setOnPosition(((Positionable) person), new Position(11, 77));
+        return new Actor(person, world);
     }
 
 }

@@ -1,5 +1,6 @@
 package game.word.impl;
 
+import game.interaction.Actionable;
 import game.interaction.move.Direction;
 import game.interaction.move.Move;
 import game.word.Positionable;
@@ -7,6 +8,7 @@ import game.word.World;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +41,16 @@ public class WorldImpl implements World {
 
     public Set<Positionable> getPositionable() {
         return new HashSet<>(this.objects);
+    }
+
+    @Override
+    public Set<Actionable> getSurroundingActionable(Positionable positionable) {
+        return this.getPositionable().stream()
+            .filter(p -> Math.abs(positionable.getPosition().getX() - p.getPosition().getX()) <= 1
+                && Math.abs(positionable.getPosition().getY() - p.getPosition().getY()) <= 1)
+            .filter(p -> p instanceof Actionable)
+            .map(p -> ((Actionable) p))
+            .collect(Collectors.toSet());
     }
 
     @Override

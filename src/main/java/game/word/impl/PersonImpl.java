@@ -6,6 +6,7 @@ import game.word.Positionable;
 public class PersonImpl implements Person, Positionable {
 
     private Position position = new Position(0, 0);
+    private boolean isBusy = false;
 
     @Override
     public Position getPosition() {
@@ -20,5 +21,20 @@ public class PersonImpl implements Person, Positionable {
     @Override
     public String toString() {
         return "Персонаж";
+    }
+
+    @Override
+    public boolean isBusy() {
+        return isBusy;
+    }
+
+    @Override
+    public void occupy() {
+        isBusy = true;
+    }
+
+    @Override
+    public void toFree() {
+        isBusy = false;
     }
 }
