@@ -2,7 +2,7 @@ package game;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import data.GameController;
+import data.GameProvider;
 import integration.Message;
 import integration.MessageDelivery;
 import integration.Messagers;
@@ -16,9 +16,9 @@ public class Game {
 
     private final MessageDelivery messageDelivery;
 
-    private final Map<Long, Actor> actors = new HashMap<>();
+    private final Map<Long, GameController> actors = new HashMap<>();
     @Inject
-    GameController gameController;
+    GameProvider gameController;
 
     @Inject
     public Game(MessageDelivery messageDelivery) {
@@ -46,13 +46,13 @@ public class Game {
                         new Message(message.getChatId(), Messagers.PERSON, Messagers.USER,
                             new Replica("Сначала надо начать игру")));
                 } else {
-                    Actor actor = actors.get(message.getChatId());
+                    GameController gameController = actors.get(message.getChatId());
                     messageDelivery.sendMessage(
                         new Message(message.getChatId(), Messagers.PERSON, Messagers.USER,
-                            Replica.of(actor.act(executionString))));
+                            Replica.of(gameController.act(executionString))));
                     messageDelivery.sendMessage(
                         new Message(message.getChatId(), Messagers.PERSON, Messagers.USER,
-                            Choice.of(actor.getChoices())));
+                            Choice.of(gameController.getChoices())));
                 }
             }
         });

@@ -5,12 +5,12 @@ import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import data.GameController;
-import data.UserController;
-import data.WorldController;
-import data.impl.GameControllerImpl;
-import data.impl.UserControllerImpl;
-import data.impl.WorldControllerImpl;
+import data.GameProvider;
+import data.UserProvider;
+import data.WorldProvider;
+import data.impl.GameProviderImpl;
+import data.impl.UserProviderImpl;
+import data.impl.WorldProviderImpl;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -35,8 +35,8 @@ public class DataBaseModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(WorldController.class).to(WorldControllerImpl.class);
-        bind(UserController.class).to(UserControllerImpl.class);
-        bind(GameController.class).to(GameControllerImpl.class);
+        bind(WorldProvider.class).to(WorldProviderImpl.class);
+        bind(UserProvider.class).to(UserProviderImpl.class);
+        bind(GameProvider.class).to(GameProviderImpl.class);
     }
 }

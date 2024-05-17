@@ -11,6 +11,7 @@ public class MoveController {
         Position old = positionable.getPosition();
         Position newPosition = old.shift(move);
         positionable.setPosition(newPosition);
-        log.debug("{} сдвинулся на {}", positionable, move.getDirection().getName().toLowerCase());
+        log.debug("[{}] {} [{}] сдвинулся на {}: с {} на {}", Thread.currentThread(), positionable,
+            positionable.hashCode(), move.getDirection().getName().toLowerCase(), old, newPosition);
     }
 }

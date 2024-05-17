@@ -1,11 +1,11 @@
 package data.impl;
 
 import com.google.inject.Inject;
-import data.GameController;
-import data.UserController;
-import data.WorldController;
+import data.GameProvider;
+import data.UserProvider;
+import data.WorldProvider;
 import data.entity.UserEntity;
-import game.Actor;
+import game.GameController;
 import game.items.potion.HealthPotion;
 import game.items.weapon.Sword;
 import game.npc.humans.Seller;
@@ -19,13 +19,13 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class GameControllerImpl implements GameController {
+public class GameProviderImpl implements GameProvider {
 
     @Inject
-    UserController userController;
+    UserProvider userController;
 
     @Inject
-    WorldController worldController;
+    WorldProvider worldController;
 
     @Override
     public void deleteUser(long userId) {
@@ -41,7 +41,7 @@ public class GameControllerImpl implements GameController {
     }
 
     @Override
-    public Actor getActorForUser(long userId) {
+    public GameController getActorForUser(long userId) {
         UserEntity user = userController.getOrCreate(userId);
         World world;
         if (user.worldId() != null) {
@@ -59,7 +59,7 @@ public class GameControllerImpl implements GameController {
 
         Person person = new PersonImpl();
         world.setOnPosition(((Positionable) person), new Position(11, 77));
-        return new Actor(person, world);
+        return new GameController(person, world);
     }
 
 }

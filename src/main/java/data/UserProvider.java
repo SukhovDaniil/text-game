@@ -3,7 +3,7 @@ package data;
 import data.entity.UserEntity;
 import java.util.Optional;
 
-public interface UserController {
+public interface UserProvider {
 
     UserEntity getOrCreate(long userId);
 

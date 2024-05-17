@@ -2,7 +2,7 @@ package data;
 
 import game.word.World;
 
-public interface WorldController {
+public interface WorldProvider {
 
     long save(World world, long id);
 

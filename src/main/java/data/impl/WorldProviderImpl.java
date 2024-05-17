@@ -2,14 +2,14 @@ package data.impl;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import data.WorldController;
+import data.WorldProvider;
 import data.dao.world.WorldDao;
 import data.entity.WorldEntity;
 import game.word.World;
 import game.word.impl.WorldImpl;
 
 @Singleton
-public class WorldControllerImpl implements WorldController {
+public class WorldProviderImpl implements WorldProvider {
 
     @Inject
     WorldDao worldDao;

@@ -2,7 +2,7 @@ package data.impl;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import data.UserController;
+import data.UserProvider;
 import data.dao.users.UserDao;
 import data.entity.UserEntity;
 import java.util.Optional;
@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Singleton
 @Slf4j
-public class UserControllerImpl implements UserController {
+public class UserProviderImpl implements UserProvider {
 
     @Inject
     UserDao userDao;
