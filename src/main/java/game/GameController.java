@@ -137,29 +137,31 @@ public class GameController implements ActionController {
             throw new IllegalArgumentException();
         }
 
-        executorService.execute(() -> {
-            this.personActor.stop();
-            this.npcActors.get(object).stop();
+        executorService.execute(() -> autodialog((Actionable) object, chatId));
+    }
 
-            availableChoices = ((Actionable) object).getActions(person).stream()
-                .collect(Collectors.toMap(ActionController::getDescription, c -> c));
+    private void autodialog(Actionable actionable, long chatId) {
+        this.personActor.stop();
+        this.npcActors.get(actionable).stop();
 
-            while (!getChoices().isEmpty()) {
-                messageDelivery.sendMessage(
-                    new Message(chatId, Messagers.PERSON, Messagers.USER,
-                        Choice.of(getChoices())));
-                String choice = new ArrayList<>(getChoices()).get(((int) (getChoices().size() * Math.random())));
-                messageDelivery.sendMessage(
-                    new Message(chatId, Messagers.PERSON, Messagers.USER,
-                        Replica.of(choice)));
-                messageDelivery.sendMessage(
-                    new Message(chatId, Messagers.PERSON, Messagers.USER,
-                        Replica.of(act(choice))));
-            }
+        availableChoices = (actionable).getActions(person).stream()
+            .collect(Collectors.toMap(ActionController::getDescription, c -> c));
 
-            this.personActor.run();
-            this.npcActors.get(object).run();
-        });
+        while (!getChoices().isEmpty()) {
+            messageDelivery.sendMessage(
+                new Message(chatId, Messagers.PERSON, Messagers.USER,
+                    Choice.of(getChoices())));
+            String choice = new ArrayList<>(getChoices()).get(((int) (getChoices().size() * Math.random())));
+            messageDelivery.sendMessage(
+                new Message(chatId, Messagers.PERSON, Messagers.USER,
+                    Replica.of(choice)));
+            messageDelivery.sendMessage(
+                new Message(chatId, Messagers.PERSON, Messagers.USER,
+                    Replica.of(act(choice))));
+        }
+
+        this.personActor.run();
+        this.npcActors.get(actionable).run();
     }
 
     @Getter

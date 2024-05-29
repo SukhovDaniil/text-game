@@ -30,5 +30,8 @@
 
 попробовать испаользовать
 
-java.util.concurrent.Executors
-java.util.concurrent.ForkJoinPool
+java.util.concurrent.Executors java.util.concurrent.ForkJoinPool
+
+Что ещё сделать:
+
+- Инициировать действия из чата ТГ с NPC, который в потоке двигается по карте
