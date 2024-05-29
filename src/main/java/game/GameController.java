@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,6 +41,9 @@ public class GameController implements ActionController {
 
     private final Person person;
     private final World world;
+
+    private ScheduledExecutorService executorService;
+
     @Setter
     @Accessors(fluent = true)
     private MessageDelivery messageDelivery;
@@ -86,6 +91,7 @@ public class GameController implements ActionController {
     }
 
     public GameController autogame(long chatId) {
+        executorService = Executors.newScheduledThreadPool(world.getPositionable().size() + 2);
         this.personActor = new Actor(() -> {
             List<Move> possibleMoves = world.getPossibleMove(((Positionable) person)).stream().toList();
             if (!possibleMoves.isEmpty()) {
@@ -98,7 +104,7 @@ public class GameController implements ActionController {
                 .filter(a -> !a.isBusy())
                 .findAny().ifPresent(p -> this.onRecieve(p, chatId));
 
-        });
+        }, executorService);
 
         this.npcActors = world.getPositionable().stream()
             .filter(p -> !(p instanceof Person))
@@ -113,7 +119,7 @@ public class GameController implements ActionController {
                                     possibleMoves.get(((int) (possibleMoves.size() * Math.random()))));
                             }
                         }
-                    })
+                    }, executorService)
                 )
             )
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
@@ -130,28 +136,30 @@ public class GameController implements ActionController {
         if (!(object instanceof Actionable)) {
             throw new IllegalArgumentException();
         }
-        this.personActor.stop();
-        this.npcActors.get(object).stop();
 
-        availableChoices = ((Actionable) object).getActions(person).stream()
-            .collect(Collectors.toMap(ActionController::getDescription, c -> c));
+        executorService.execute(() -> {
+            this.personActor.stop();
+            this.npcActors.get(object).stop();
 
-        while (!getChoices().isEmpty()) {
-            messageDelivery.sendMessage(
-                new Message(chatId, Messagers.PERSON, Messagers.USER,
-                    Choice.of(getChoices())));
-            String choice = new ArrayList<>(getChoices()).get(((int) (getChoices().size() * Math.random())));
-            messageDelivery.sendMessage(
-                new Message(chatId, Messagers.PERSON, Messagers.USER,
-                    Replica.of(choice)));
-            messageDelivery.sendMessage(
-                new Message(chatId, Messagers.PERSON, Messagers.USER,
-                    Replica.of(act(choice))));
-        }
+            availableChoices = ((Actionable) object).getActions(person).stream()
+                .collect(Collectors.toMap(ActionController::getDescription, c -> c));
 
-        this.personActor.run();
-        this.npcActors.get(object).run();
+            while (!getChoices().isEmpty()) {
+                messageDelivery.sendMessage(
+                    new Message(chatId, Messagers.PERSON, Messagers.USER,
+                        Choice.of(getChoices())));
+                String choice = new ArrayList<>(getChoices()).get(((int) (getChoices().size() * Math.random())));
+                messageDelivery.sendMessage(
+                    new Message(chatId, Messagers.PERSON, Messagers.USER,
+                        Replica.of(choice)));
+                messageDelivery.sendMessage(
+                    new Message(chatId, Messagers.PERSON, Messagers.USER,
+                        Replica.of(act(choice))));
+            }
 
+            this.personActor.run();
+            this.npcActors.get(object).run();
+        });
     }
 
     @Getter

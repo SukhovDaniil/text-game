@@ -1,38 +1,34 @@
 package game.interaction;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class Actor {
 
-    private final Iterator iteration;
-    private AtomicReference<Boolean> stop = new AtomicReference<>(true);
-    private Thread thread;
+    private final ScheduledExecutorService executorService;
+    private final Runnable iteration;
+    private Future<?> feature;
 
-    public Actor(Iterator iteration) {
+    public Actor(Runnable iteration, ScheduledExecutorService executorService) {
         this.iteration = iteration;
+        this.executorService = executorService;
     }
 
     public void run() {
-        if (this.stop.get()) {
-            stop.set(false);
-            Thread parentThread = Thread.currentThread();
-            this.thread = new Thread(() -> {
-                while (!stop.get() && parentThread.isAlive()) {
-                    iteration.iterate();
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                thread.interrupt();
-            });
-            this.thread.start();
+        log.debug("run from thread: {}", Thread.currentThread());
+        if (this.feature == null || this.feature.isCancelled()) {
+            this.feature = executorService.scheduleWithFixedDelay(iteration, 0, 1, TimeUnit.SECONDS);
         }
     }
 
     public void stop() {
-        this.stop.set(true);
+        if (this.feature == null) {
+            return;
+        }
+        this.feature.cancel(true);
     }
 
 }
